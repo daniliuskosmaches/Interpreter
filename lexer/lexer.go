@@ -30,18 +30,16 @@ func (l *Lexer) ReadChar() byte {
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
+	l.skipWhitespace()
 	switch l.ch {
 	case '=':
 		tok = NewToken(token.ASSIGN, l.ch)
 	case '+':
-
 		tok = NewToken(token.PLUS, l.ch)
 	case '{':
 		tok = NewToken(token.LBRACE, l.ch)
 	case '}':
 		tok = NewToken(token.RBRACE, l.ch)
-	case ';':
-		tok = NewToken(token.SEMICOLON, l.ch)
 	case '(':
 		tok = NewToken(token.LPAREN, l.ch)
 	case ')':
@@ -52,13 +50,56 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		tok.Literal = string(l.ch)
-		tok.Type = token.IDENT
+		if isLetter(l.ch) {
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else if l.isDigit() {
+			tok.Type = token.INT
+			tok.Literal = l.readNumber()
+
+		} else {
+			tok = NewToken(token.ILLEGAL, l.ch)
+		}
+
 	}
+	l.ReadChar()
 
 	return tok
 }
 
-func NewToken(tokenType token.TokenType, ch byte) token.Token {
+func (l *Lexer) readNumber() string {
+	position := l.position
+	//reading the numbers
+	for l.isDigit() {
+		l.ReadChar()
+	}
+
+	return l.input[position:l.position]
+
+}
+
+func (l *Lexer) isDigit() bool {
+	return '0' <= l.ch && l.ch <= '9'
+}
+
+func (l *Lexer) readIdentifier() string {
+	pos := l.position
+	for isLetter(l.ch) {
+		l.ReadChar()
+	}
+	return l.input[pos:l.position]
+}
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func NewToken(tokenType token.Type, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
+}
+
+func (l *Lexer) skipWhitespace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.ReadChar()
+	}
 }
