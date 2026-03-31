@@ -55,8 +55,7 @@ return false;
 		{token.IDENT, "y"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
-		{token.SEMICOLON, ";"}, // ← ВАЖНО: он тут есть в input
-
+		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "result"},
 		{token.ASSIGN, "="},
@@ -81,7 +80,6 @@ return false;
 		{token.GT, ">"},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
-
 		{token.IF, "if"},
 		{token.LPAREN, "("},
 		{token.INT, "5"},
@@ -93,27 +91,23 @@ return false;
 		{token.TRUE, "true"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
-
 		{token.ELSE, "else"},
 		{token.LBRACE, "{"},
 		{token.RETURN, "return"},
 		{token.FALSE, "false"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
-
 		{token.INT, "10"},
 		{token.EQ, "=="},
 		{token.INT, "10"},
 		{token.SEMICOLON, ";"},
-
 		{token.INT, "10"},
-		{token.NotEq, "!="}, // ← фикс регистра
+		{token.NotEq, "!="},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
-
 		{token.EOF, ""},
 	}
-
+//that is the parsing that checking our Literal and token value to be valid 
 	l := New(input)
 	for i, tt := range tests {
 		tok := l.NextToken()
