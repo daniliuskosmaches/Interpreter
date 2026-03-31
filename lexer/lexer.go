@@ -31,7 +31,9 @@ func (l *Lexer) ReadChar() byte {
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	l.skipWhitespace()
-	switch l.ch {
+	switch l.ch { 
+ case ';':
+    tok = NewToken(token.SEMICOLON, l.ch)
 	case '=':
 		tok = NewToken(token.ASSIGN, l.ch)
 	case '+':
