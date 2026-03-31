@@ -24,17 +24,37 @@ const (
 	RBRACE    = "}"
 
 	FUNCTION = "FUNCTION"
+	MINUS    = "-"
+	BANG     = "!"
+	ASTERISK = "*"
+	SLASH    = "/"
+	LT       = "<"
+	GT       = ">"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
+	IF       = "IF"
+	ELSE     = "ELSE"
+	RETURN   = "RETURN"
+	EQ       = "=="
+	NotEq    = "!="
 )
 
 var keywords = map[string]Type{
-	"fn":  FUNCTION,
-	"let": LET,
+	"fn":     FUNCTION,
+	"let":    LET,
+	"if":     IF,
+	"else":   ELSE,
+	"return": RETURN,
+	"true":   TRUE,
+	"false":  FALSE,
 }
 
 func LookupIdent(s string) Type {
+
 	if tok, ok := keywords[s]; ok {
 		return tok
 	}
 
 	return IDENT
+
 }
