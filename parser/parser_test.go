@@ -1,7 +1,9 @@
 package parser
 
 import (
+	"Interpreter/ast"
 	"Interpreter/lexer"
+	"log"
 	"testing"
 )
 
@@ -31,6 +33,21 @@ func TestLetStatement(t *testing.T) {
 
 	}
 }
-func TestReturnStatement(t *testing.T) {
+func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
+	if s.TokenLiteral() != "let" {
+		log.Fatalf("statement is not let. got=%q", s.TokenLiteral())
+		return false
+	}
+	letstmt, ok := s.(*ast.LetStatement)
+	if !ok {
+		log.Fatalf("statement is not let. got=%T", s)
+	}
+	if letstmt.Name.Value != name {
+		log.Fatalf("name is not %q. got=%q", name, letstmt.Name.Value)
+	}
+	if letstmt.TokenLiteral() != name {
+		log.Fatalf("s.Name is not %q. got=%q", name, letstmt.TokenLiteral())
+	}
 
+	return true
 }
