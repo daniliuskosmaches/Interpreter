@@ -107,7 +107,7 @@ return false;
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
-//that is the parsing that checking our Literal and token value to be valid 
+	//that is the parsing that checking our Literal and token value to be valid
 	l := New(input)
 	for i, tt := range tests {
 		tok := l.NextToken()
