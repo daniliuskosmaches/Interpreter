@@ -40,6 +40,16 @@ type ExpressionStatement struct {
 	Expression Expression
 }
 
+func (e *ExpressionStatement) String() string {
+	if e.Expression != nil {
+		return e.Expression.String()
+	}
+	return " "
+}
+func (e *ExpressionStatement) expressionNode() {
+
+}
+
 func (e *ExpressionStatement) StatementNode() {
 
 }
@@ -53,11 +63,22 @@ func (r *ReturnStatement) StatementNode() {
 func (r *ReturnStatement) TokenLiteral() string {
 	return r.Token.Literal
 }
+func (r *ReturnStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(r.TokenLiteral() + " ")
+	out.WriteString(r.ReturnValue.String())
+	out.WriteString(" ; ")
+	return out.String()
+}
 
 type LetStatement struct {
 	Token token.Token
 	Name  *Identifier
-	Value string
+	Value Expression
+}
+
+func (i *Identifier) String() string {
+	return i.Value
 }
 
 func (l *LetStatement) StatementNode() {
@@ -65,6 +86,17 @@ func (l *LetStatement) StatementNode() {
 }
 func (l *LetStatement) TokenLiteral() string {
 	return l.Token.Literal
+}
+func (l *LetStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(l.TokenLiteral() + " ")
+	out.WriteString(l.Name.String())
+	out.WriteString(" = ")
+	if l.Value != nil {
+		out.WriteString(l.Value.String())
+	}
+	out.WriteString(" ; ")
+	return out.String()
 }
 
 type Identifier struct {
