@@ -7,6 +7,17 @@ import (
 	"fmt"
 )
 
+const (
+	_ int = iota
+	LOWEST
+	EQUALS
+	LESSGREATER
+	SUM
+	PRODUCT
+	PREFIX
+	CALL
+)
+
 type Parser struct {
 	l              *lexer.Lexer
 	curToken       token.Token
@@ -28,13 +39,41 @@ func (p *Parser) registerInfix(tokenType token.Type, fn infixParsefn) {
 	p.infixParseFns[tokenType] = fn
 
 }
+func (p *Parser) ParseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{
+		Token: p.curToken,
+	}
+	stmt.Expression = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
 
+	}
+	return stmt
+
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFns[p.curToken.Type]
+	if prefix == nil {
+		return nil
+	}
+	left := prefix()
+
+	return left
+}
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
 	p.nextToken()
 	p.nextToken()
+	p.prefixParseFns = make(map[token.Type]prefixParsefn)
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	return p
 }
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
+
 func (p *Parser) Errors() []string {
 	return p.errors
 }
