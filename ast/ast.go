@@ -17,6 +17,20 @@ type Expression interface {
 	Node
 	expressionNode()
 }
+type IntegerLiteral struct {
+	token token.Token
+	Value int64
+}
+
+func (i *IntegerLiteral) TokenLiteral() string {
+	return i.token.Literal
+}
+func (i *IntegerLiteral) String() string {
+	return i.token.Literal
+}
+func (i *IntegerLiteral) expressionNode() {
+}
+
 type Program struct {
 	Statements []Statement
 }
