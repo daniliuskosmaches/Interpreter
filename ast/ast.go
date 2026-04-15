@@ -18,15 +18,15 @@ type Expression interface {
 	expressionNode()
 }
 type IntegerLiteral struct {
-	token token.Token
+	Token token.Token
 	Value int64
 }
 
 func (i *IntegerLiteral) TokenLiteral() string {
-	return i.token.Literal
+	return i.Token.Literal
 }
 func (i *IntegerLiteral) String() string {
-	return i.token.Literal
+	return i.Token.Literal
 }
 func (i *IntegerLiteral) expressionNode() {
 }

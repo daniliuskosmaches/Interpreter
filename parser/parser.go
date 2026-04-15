@@ -5,6 +5,7 @@ import (
 	"Interpreter/lexer"
 	"Interpreter/token"
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -67,6 +68,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 	p.prefixParseFns = make(map[token.Type]prefixParsefn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	return p
 }
 
@@ -87,6 +89,7 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.l.NextToken()
 
 }
+
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
@@ -107,6 +110,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.INT:
+		return p.ParseExpressionStatement()
 	default:
 
 		return nil
@@ -142,6 +147,18 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	lit := &ast.IntegerLiteral{Token: p.curToken}
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("couldnt parse %s as integer", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	lit.Value = value
+	return lit
 }
 
 func (p *Parser) curTokenIs(t token.Type) bool {

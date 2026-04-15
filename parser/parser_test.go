@@ -124,7 +124,7 @@ func TestIntegerLiteralExpression(t *testing.T) {
 		t.Fatalf("literal.Value is not 5, got = %d", literal.Value)
 	}
 	if literal.TokenLiteral() != "5" {
-		t.Fatalf("token literal is not 5, got = %d", literal.TokenLiteral())
+		t.Fatalf("token literal is not 5, got = %s", literal.TokenLiteral())
 	}
 
 }
