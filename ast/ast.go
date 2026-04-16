@@ -22,6 +22,12 @@ type IntegerLiteral struct {
 	Value int64
 }
 
+type PrefixExpression struct {
+	Token    token.Token
+	Operator string
+	Right    Expression
+}
+
 func (i *IntegerLiteral) TokenLiteral() string {
 	return i.Token.Literal
 }
