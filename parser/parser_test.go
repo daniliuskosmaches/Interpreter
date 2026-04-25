@@ -3,6 +3,7 @@ package parser
 import (
 	"Interpreter/ast"
 	"Interpreter/lexer"
+	"fmt"
 	"log"
 	"testing"
 )
@@ -144,12 +145,38 @@ func TestParsingPrefixExpression(t *testing.T) {
 		program := p.ParseProgram()
 		CheckErrors(t, p)
 		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0] is not ExpressionStatement, got %T", program.Statements[0])
+		}
 
 		exp, ok := stmt.Expression.(*ast.PrefixExpression)
 		if !ok {
+			t.Fatalf("staement is not PrefixExpression , got %T", stmt.Expression)
+
+		}
+		if exp.Operator != tt.operator {
+			t.Fatalf("expression operator is not %q, got %q", tt.operator, exp.Operator)
+		}
+		if !testIntegerLiteral(t, exp.Right, tt.integerValue) {
+			return
 
 		}
 
 	}
 
+}
+func testIntegerLiteral(t *testing.T, exp ast.Expression, value int64) bool {
+	integer, ok := exp.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("integer is not IntegerLiteral, got %T", exp)
+	}
+	if integer.Value != value {
+		t.Fatalf("integer value is not %d, got %d", value, integer.Value)
+		return false
+
+	}
+	if integer.TokenLiteral() != fmt.Sprint(value) {
+		t.Fatalf("tokenliteral is not %d, got %s", value, integer.TokenLiteral())
+	}
+	return true
 }

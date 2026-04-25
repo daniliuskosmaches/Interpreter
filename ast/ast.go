@@ -28,6 +28,24 @@ type PrefixExpression struct {
 	Right    Expression
 }
 
+func (p *PrefixExpression) TokenLiteral() string {
+	return p.Token.Literal
+}
+
+func (p *PrefixExpression) expressionNode() {
+
+}
+func (p *PrefixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(p.Operator)
+	out.WriteString(p.Right.String())
+	out.WriteString(")")
+
+	return out.String()
+
+}
+
 func (i *IntegerLiteral) TokenLiteral() string {
 	return i.Token.Literal
 }
