@@ -56,6 +56,8 @@ func (p *Parser) ParseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
+
+		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
 	left := prefix()
@@ -80,6 +82,7 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	}
 	p.nextToken()
 	expression.Right = p.parseExpression(PREFIX)
+
 	return expression
 }
 
@@ -124,8 +127,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.INT:
 		return p.ParseExpressionStatement()
 	default:
-
-		return nil
+		return p.ParseExpressionStatement()
 	}
 }
 
@@ -189,23 +191,12 @@ func (p *Parser) peekTokenIs(t token.Type) bool {
 	return p.peekToken.Type == t
 
 }
-func (p *Parser) ParseExpression(pr int) ast.Expression {
-	prefix := p.prefixParseFns[p.curToken.Type]
-	if prefix == nil {
-		fmt.Errorf(
-			"no prefix parse function for %s found", p.curToken.Literal)
-		return nil
-	}
-	leftPref := prefix()
-	return leftPref
 
-}
-func (p *Parser) noPrefixParseFnError(t *token.Token) ast.Expression {
-	msg := fmt.Sprintf("no prefix parse function for %s found", t.Literal)
+func (p *Parser) noPrefixParseFnError(t token.Type) {
+	msg := fmt.Sprintf("no prefix parse function for %s found", t)
 	p.errors = append(p.errors, msg)
-
-	return nil
 }
+
 func (p *Parser) noInfixParseFnError(t *token.Token) ast.Expression {
 	msg := fmt.Sprintf("no infix parse function for %s found", t.Literal)
 	p.errors = append(p.errors, msg)

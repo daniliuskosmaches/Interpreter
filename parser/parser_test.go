@@ -145,6 +145,7 @@ func TestParsingPrefixExpression(t *testing.T) {
 		program := p.ParseProgram()
 		CheckErrors(t, p)
 		if len(program.Statements) != 1 {
+
 			t.Fatalf("program statements is not 1, got %d", len(program.Statements))
 
 		}
