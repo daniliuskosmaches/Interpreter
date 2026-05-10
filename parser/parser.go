@@ -6,6 +6,7 @@ import (
 	"Interpreter/token"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -66,7 +67,25 @@ func (p *Parser) registerInfix(tokenType token.Type, fn infixParsefn) {
 	p.infixParseFns[tokenType] = fn
 
 }
+
+var traceLevel int = 0
+
+func tracePrint(fs string) {
+	fmt.Printf("%s%s\n", strings.Repeat("\t", traceLevel), fs)
+}
+func trace(msg string) string {
+	tracePrint("BEGIN " + msg)
+	traceLevel++
+	return msg
+}
+
+func untrace(msg string) {
+	traceLevel--
+	tracePrint("END " + msg)
+}
 func (p *Parser) ParseExpressionStatement() *ast.ExpressionStatement {
+	defer untrace(trace("ParseExpressionStatement"))
+
 	stmt := &ast.ExpressionStatement{
 		Token: p.curToken,
 	}
@@ -80,6 +99,7 @@ func (p *Parser) ParseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
+	defer untrace(trace("parseExpression"))
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
 		p.noPrefixParseFnError(p.curToken.Type)
@@ -124,6 +144,7 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 func (p *Parser) parsePrefixExpression() ast.Expression {
+	defer untrace(trace("parsePrefixExpression"))
 	expression := &ast.PrefixExpression{
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
@@ -135,6 +156,7 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 }
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	defer untrace(trace("parseInfixExpression"))
 	expression := &ast.InfixExpression{
 		Token:    p.curToken,
 		Left:     left,
@@ -143,7 +165,13 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 
 	precedence := p.curPrecedence()
 	p.nextToken()
-	expression.Right = p.parseExpression(precedence)
+
+	if expression.Operator == token.PLUS {
+		expression.Right = p.parseExpression(precedence - 1)
+	} else {
+		expression.Right = p.parseExpression(precedence)
+
+	}
 	return expression
 
 }
@@ -225,6 +253,8 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
+	defer untrace(trace("parseIntegerLiteral"))
+
 	lit := &ast.IntegerLiteral{Token: p.curToken}
 	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
 	if err != nil {
@@ -264,3 +294,6 @@ func (p *Parser) noInfixParseFnError(t *token.Token) ast.Expression {
 	p.errors = append(p.errors, msg)
 	return nil
 }
+
+//  variables like 1 2 3 and string hello and etc is Literal in ast signs like == + - ** * is Expression in Infix
+// 1 - p.curToken + - p.peekToken
