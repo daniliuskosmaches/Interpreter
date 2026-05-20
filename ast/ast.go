@@ -23,6 +23,23 @@ type InfixExpression struct {
 	Right    Expression
 	Operator string
 }
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
+}
+func (b *Boolean) String() string {
+	return b.Token.Literal
+}
+func (b *Boolean) expressionNode() {
+
+}
+func (b *Boolean) StatementNode() {
+
+}
 
 func (i *InfixExpression) TokenLiteral() string {
 	return i.Token.Literal

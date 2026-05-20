@@ -308,3 +308,61 @@ func TestOperatorPrecedence(t *testing.T) {
 		fmt.Printf("infix expression: %q\n", tt.input)
 	}
 }
+func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
+
+	ident, ok := exp.(*ast.Identifier)
+	if !ok {
+		t.Fatalf("exp is not ast.Identifier, got %T", exp)
+		return false
+
+	}
+
+	if ident.Value != value {
+
+		t.Fatalf("ident.value is not %q, got %q", value, ident.Value)
+		return false
+
+	}
+	if ident.TokenLiteral() != value {
+		t.Fatalf("ident.TokenLiteral is not %q, got %q", value, ident.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+	switch v := expected.(type) {
+	case int:
+		return testIntegerLiteral(t, exp, int64(v))
+
+	case int64:
+		return testIntegerLiteral(t, exp, v)
+
+	case string:
+		return testIdentifier(t, exp, v)
+
+	}
+	t.Errorf("type of %T not supported", expected)
+	return false
+
+}
+func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, operator string, right interface{}) bool {
+	opExp, ok := exp.(*ast.InfixExpression)
+	if !ok {
+		t.Errorf("opExp is not ast.OperatorExpression, got %T", exp)
+		return false
+
+	}
+	if !testLiteralExpression(t, opExp.Left, left) {
+		return false
+
+	}
+	if opExp.Operator != operator {
+		t.Errorf("operator expression is not %q, got %q", operator, opExp.Operator)
+		return false
+	}
+	if !testLiteralExpression(t, opExp.Right, right) {
+		return false
+	}
+	return true
+}
