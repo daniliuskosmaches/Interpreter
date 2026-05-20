@@ -136,10 +136,6 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NotEq, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
-	p.registerInfix(token.LPAREN, p.parseInfixExpression)
-	p.registerInfix(token.RPAREN, p.parseInfixExpression)
-	p.registerInfix(token.LBRACE, p.parseInfixExpression)
-	p.registerInfix(token.RBRACE, p.parseInfixExpression)
 
 	return p
 }
@@ -166,12 +162,8 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	precedence := p.curPrecedence()
 	p.nextToken()
 
-	if expression.Operator == token.PLUS {
-		expression.Right = p.parseExpression(precedence - 1)
-	} else {
-		expression.Right = p.parseExpression(precedence)
+	expression.Right = p.parseExpression(precedence)
 
-	}
 	return expression
 
 }
