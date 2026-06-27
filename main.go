@@ -18,3 +18,5 @@ func main() {
 	fmt.Println("Hello, and welcome to my QotaqScript interpreted turing complete language" + user.Username)
 	repl.Start(os.Stdin, os.Stdout)
 }
+
+// go feature if inside of the function with variable for example x := 42 we will return &42, variable will be allocated on heap memory
